@@ -46,21 +46,28 @@ class User:
         is_valid = True
         query = "SELECT * FROM users WHERE email = %(email)s;"
         results = connectToMySQL('login_and_registration_schema').query_db(query,user)
-        if len(results) >= 1:
-            flash("Email already taken.","register")
-            is_valid=False
-        if not EMAIL_REGEX.match(user['email']):
-            flash("Invalid Email!!!","register")
-            is_valid=False
         if len(user['first_name']) < 3:
             flash("First name must be at least 3 characters","register")
             is_valid= False
         if len(user['last_name']) < 3:
             flash("Last name must be at least 3 characters","register")
             is_valid= False
+        if len(results) >= 1:
+            flash("Email already taken.","register")
+            is_valid=False
+        if not EMAIL_REGEX.match(user['email']):
+            flash("Invalid Email!!!","register")
+            is_valid=False
         if len(user['password']) < 8:
             flash("Password must be at least 8 characters","register")
-            is_valid= False
+            is_valid = False
+        if not any(char.isdigit() for char in user['password']):
+            flash('Password should have at least one number')
+            is_valid = False
+        if not any(char.isupper() for char in user['password']):
+            flash('Password should have at least one uppercase letter')
+            is_valid = False
         if user['password'] != user['confirm']:
             flash("Passwords don't match","register")
+            is_valid = False
         return is_valid
